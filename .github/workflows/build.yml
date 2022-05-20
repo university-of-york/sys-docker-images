@@ -1,0 +1,34 @@
+name: Build Docker images
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron:  '30 6 * * MON-FRI'
+
+jobs:
+  comms-deployments:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [node-grunt-sass]
+        ruby: [14]
+    name: Build ci/${{ matrix.image }}:${{ matrix.ruby }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build image
+        uses: docker/build-push-action@v3
+        with:
+          context: ci/${{ matrix.image }}/${{ matrix.ruby }}
+          pull: true
+          push: ${{ github.ref == 'refs/heads/main' }}
