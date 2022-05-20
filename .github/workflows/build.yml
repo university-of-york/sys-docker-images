@@ -32,3 +32,4 @@ jobs:
           context: ci/${{ matrix.image }}/${{ matrix.node }}
           pull: true
           push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ghcr.io/${{ github.repository }}/ci/${{ matrix.image }}:${{ matrix.node }}
