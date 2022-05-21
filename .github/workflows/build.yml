@@ -11,7 +11,7 @@ on:
     - cron:  '30 6 * * MON-FRI'
 
 jobs:
-  comms-deployments:
+  node:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -33,3 +33,27 @@ jobs:
           pull: true
           push: ${{ github.ref == 'refs/heads/main' }}
           tags: ghcr.io/${{ github.repository }}/ci/${{ matrix.image }}:${{ matrix.node }}
+  rsyncssh:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [rsyncssh]
+        version: [1]
+    name: Build ci/${{ matrix.image }}:${{ matrix.version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build image
+        uses: docker/build-push-action@v3
+        with:
+          context: ci/${{ matrix.image }}/${{ matrix.version }}
+          pull: true
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ghcr.io/${{ github.repository }}/ci/${{ matrix.image }}:${{ matrix.version }}
