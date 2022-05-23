@@ -1,4 +1,4 @@
-FROM library/node:14
+FROM library/node:14-bullseye
 
 ENV DEBIAN_FRONTEND noninteractive
 
